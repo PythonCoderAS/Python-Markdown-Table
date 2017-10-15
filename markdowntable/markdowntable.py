@@ -16,7 +16,7 @@ class Table():
         self.columns += 1
         self.table += '''{}|'''.format(name)
 
-    def finalize_columms(self):
+    def finalize_cols(self):
         finalizer = '\n|'
         for i in range(self.columns):
             finalizer += '---|'
