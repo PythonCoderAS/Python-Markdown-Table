@@ -55,9 +55,6 @@ class Table():
             raise AssertionError('You entered in too many row values. Please only enter {} row names.'.format(str(self.columns)))
         self.table += '\n{}'.format(row)
 
-    def get_table(self):
-        return self.table
-
 
     def export_table_to_file(self, filename = 'markdowntable', extension='txt', mode = 'w+', overwrite_warning = True):
         with open('{fname}.{ext}'.format(fname = str(filename), ext = str(extension)),str(mode)) as file:
