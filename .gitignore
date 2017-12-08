@@ -102,3 +102,10 @@ ENV/
 
 #sphinx
 docs\
+.pypirc
+Makefile
+make.bat
+source*
+
+#my custom file
+setupcommands.bat
