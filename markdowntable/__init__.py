@@ -1,34 +1,54 @@
-from __future__ import print_function, unicode_literals
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
+from __future__ import print_function, unicode_literals
+from .exceptions import SupressedError
 
 class Table():
     """docstring for Table.
     This is the main class. It adds rows and columns, with data
     """
-    def __init__(self, name):
+    def __init__(self, name, debug = True):
         super(Table, self).__init__()
+        self.debug = debug
         self.rows = 0
         self.columns = 1
         self.table = '''|{}|'''.format(str(name))
         self.finalized = False
+        if self.debug:
+            self.functions = []
 
     def debug(self):
-        print('''Printing debug information:
-        Rows: {rows}
-        Columns: {cols}
-        Finalized?: {fin}
-        Table Content: {table}'''.format(rows = str(self.rows),
-        cols = str(self.columns),
-        fin = str(self.finalized),
-        table = self.table))
+        try:
+            print('''Printing debug information:
+            Rows: {rows}
+            Columns: {cols}
+            Finalized?: {fin}
+            Table Content: {table}
+            Functions: {funcs}'''.format(rows = str(self.rows),
+            cols = str(self.columns),
+            fin = str(self.finalized),
+            table = self.table,
+            funcs = self.functions))
+    except(NameError):
+        pass
+    except Exception as e:
 
-    def add_column(self, name):
+    def add_column(self, name, all_cols = False):
         self.columns += 1
-        self.table += '''{}|'''.format(name)
+        self.table += '{}|'.format(str(name))
+        try:
+            if all_cols:
+                return {'function':'add_column', 'data': [str(name)]}
+            else:
+                self.functions.append({'function':'add_column', 'data': [str(name)]})
+        except(NameError):
+            pass
 
     def all_columns(self, *args):
+        all_col_data = {'function':'all_columns', 'data': []}
         for value in args:
-            self.add_column(str(value))
+            all_col_data['data'].append(self.add_column(str(value), all_cols = True))
 
     def finalize_cols(self):
         finalizer = '\n|'

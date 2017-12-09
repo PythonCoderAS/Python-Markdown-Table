@@ -109,3 +109,6 @@ source*
 
 #my custom file
 setupcommands.bat
+
+#.anything
+.*
