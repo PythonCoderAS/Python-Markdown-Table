@@ -2,7 +2,7 @@ from setuptools import setup
 
 
 setup(name='markdowntable',
-      version='5.0.1.2',
+      version='5.0.1.3',
       description='Easy way to make markdown code for tables',
       url='https://github.com/PokestarFan/Python-Markdown-Table',
       author='PokestarFan',

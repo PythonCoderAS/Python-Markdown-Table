@@ -8,6 +8,11 @@ import io
 from .exceptions import (SuppressedError,
                          TooManyValues,
                          DoNotOverwrite)
+from .messages import (not_enough_values,
+                       overwrite_message)
+
+
+# Todo: Add remove_column and remove row
 
 
 class Table:
@@ -15,11 +20,16 @@ class Table:
     This is the main class. It adds rows and columns, with data
     """
 
-    def __init__(self, name, debug=True):
-        super(Table, self).__init__()
-        self.todebug = debug
-        self.rows = 0
-        self.columns = 1
+    def __init__(self, name, debug=True):  # creates self variables
+        """
+
+        :param name: string
+        :param debug: boolean
+        """
+        super(Table, self).__init__()  # idk
+        self.todebug = debug  # debug?
+        self.rows = 0  # rows
+        self.columns = 1  # columns
         self.table = '''|{}|'''.format(str(name))
         self.finalized = False
         if self.todebug:
@@ -28,11 +38,13 @@ class Table:
 
     def debug(self, print_d=True):
         """
-        :rtype: str
+
+        :param print_d: bool
+        :return: string
         """
-        global dmessage
+        global debugmessage
         try:
-            dmessage = '''Printing debug information:
+            debugmessage = '''Printing debug information:
             Rows: {rows}
             Columns: {cols}
             Finalized?: {fin}
@@ -43,15 +55,21 @@ class Table:
                                          table=self.table,
                                          funcs=self.functions)
             if print_d:
-                print(dmessage)
+                print(debugmessage)
             else:
-                return dmessage
+                return debugmessage
         except NameError:
             pass
         except Exception as e:
-            raise SuppressedError(type(e).__name__, str(e), dmessage)
+            raise SuppressedError(type(e).__name__, str(e), debugmessage)
 
     def add_column(self, name, all_cols=False):
+        """
+
+        :param name: string
+        :param all_cols: string
+        :return: None
+        """
         self.columns += 1
         self.table += '{}|'.format(str(name))
         try:
@@ -65,6 +83,11 @@ class Table:
             raise SuppressedError(type(e).__name__, str(e), self.debug(print_d=False))
 
     def all_columns(self, *args):
+        """
+
+        :param args: string
+        :return: None
+        """
         try:
             all_col_data = {'function': 'all_columns', 'data': []}
             for value in args:
@@ -74,6 +97,10 @@ class Table:
             raise SuppressedError(type(e).__name__, str(e), self.debug(print_d=False))
 
     def finalize_cols(self):
+        """
+
+        :return: None
+        """
         try:
             finalizer = '\n|'
             for i in range(self.columns):
@@ -84,6 +111,12 @@ class Table:
             raise SuppressedError(type(e).__name__, str(e), self.debug(print_d=False))
 
     def add_row(self, show_warning_message=True, *args):
+        """
+
+        :param show_warning_message: bool
+        :param args: string
+        :return: None
+        """
         try:
             if self.finalized_run:
                 self.finalized_run = False
@@ -104,16 +137,12 @@ class Table:
                 add_row_data['data']['values'].append(args[i])
             if self.columns > rows_made:
                 if show_warning_message:
-                    print(
-                        "You did not enter in enough values. You entered in {} values out of {} values. The values "
-                        "that you did not enter in will be filled in with a blank space. You can stop this message "
-                        "from appearing by adding the argument show_warning_message = False".format(
-                            str(rows_made), str(self.columns)))
+                    print(not_enough_values(rows_made, self.columns))
                     add_row_data['data']['message_shown'] = True
                 for i in range(int(self.columns - rows_made)):
                     row += ' |'
-                add_row_data['data']['values'].append('{} blank values added'.format(str(int(self.columns) - int(
-                    rows_made))))
+                # noinspection PyTypeChecker
+                add_row_data['data']['values'].append('{} blank values added'.format(str(self.columns - rows_made)))
             elif self.columns < rows_made:
                 raise TooManyValues(self.columns)
             self.table += '\n{}'.format(row)
@@ -124,7 +153,15 @@ class Table:
             raise SuppressedError(type(e).__name__, str(e), self.debug(print_d=False))
 
     def export_table_to_file(self, filename='markdowntable', extension='txt', mode='w+', overwrite_warning=True):
-        global mode_check, message_displayed, fileread
+        """
+
+        :param filename: string
+        :param extension: string
+        :param mode: string
+        :param overwrite_warning: bool
+        :return: None
+        """
+        global mode_check, message_displayed, file_read
         try:
             with open('{fname}.{ext}'.format(fname=str(filename), ext=str(extension)), str(mode)) as file:
                 try:
@@ -133,16 +170,14 @@ class Table:
                     if mode == 'w' or mode == 'w+':
                         mode_check = True
                     if len(contents) > 0 and overwrite_warning and mode_check:
-                        print(
-                            'This file already contains content. Do you want to overwrite the contents of the file? '
-                            'You can add the argument mode = a[+] to not overwrite.')
+                        print()
                         true = True
                         false = False
                         overwrite = input('Write True or False:')
                         if overwrite:
                             raise DoNotOverwrite
                         message_displayed = True
-                    fileread = True
+                    file_read = True
                 except io.UnsupportedOperation:
                     pass
                 except DoNotOverwrite:
@@ -151,6 +186,6 @@ class Table:
                     file.write(self.table)
                 self.functions.append({'function': 'export_table_to_file',
                                        'data': {'filename': filename, 'extension': extension, 'writemode': mode,
-                                                'overwrite_warning': overwrite_warning, 'file read': fileread}})
+                                                'overwrite_warning': overwrite_warning, 'file read': file_read}})
         except Exception as e:
             raise SuppressedError(type(e).__name__, str(e), self.debug(print_d=False))
