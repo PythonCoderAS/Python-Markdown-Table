@@ -112,3 +112,6 @@ setupcommands.bat
 
 #.anything
 .*
+
+#logs
+logs*
