@@ -96,6 +96,21 @@ class Table:
         except Exception as e:
             raise SuppressedError(type(e).__name__, str(e), self.debug(print_d=False))
 
+    def all_columns_with_list(self, list):
+        """
+
+        :param list: list
+        :return: None
+        """
+        try:
+            all_col_data = {'function': 'all_columns', 'data': []}
+            for value in list:
+                all_col_data['data'].append(self.add_column(str(value), all_cols=True))
+            self.functions.append(all_col_data)
+        except Exception as e:
+            raise SuppressedError(type(e).__name__, str(e), self.debug(print_d=False))
+
+
     def finalize_cols(self):
         """
 
@@ -110,7 +125,7 @@ class Table:
         except Exception as e:
             raise SuppressedError(type(e).__name__, str(e), self.debug(print_d=False))
 
-    def add_row(self, show_warning_message=True, *args):
+    def add_row(self, *args, show_warning_message=True):
         """
 
         :param show_warning_message: bool
@@ -135,6 +150,48 @@ class Table:
                 row += '{}|'.format(str(args[i]))
                 rows_made += 1
                 add_row_data['data']['values'].append(args[i])
+            if self.columns > rows_made:
+                if show_warning_message:
+                    print(not_enough_values(rows_made, self.columns))
+                    add_row_data['data']['message_shown'] = True
+                for i in range(int(self.columns - rows_made)):
+                    row += ' |'
+                # noinspection PyTypeChecker
+                add_row_data['data']['values'].append('{} blank values added'.format(str(self.columns - rows_made)))
+            elif self.columns < rows_made:
+                raise TooManyValues(self.columns)
+            self.table += '\n{}'.format(row)
+            self.functions.append(add_row_data)
+        except TooManyValues:
+            raise
+        except Exception as e:
+            raise SuppressedError(type(e).__name__, str(e), self.debug(print_d=False))
+
+    def add_row_with_list(self, list, show_warning_message=True):
+        """
+
+        :param show_warning_message: bool
+        :param list: list
+        :return: None
+        """
+        try:
+            if self.finalized_run:
+                self.finalized_run = False
+            if not self.finalized:
+                self.finalize_cols()
+                self.finalized_run = True
+                self.finalized = True
+            add_row_data = {'function': 'add_row',
+                            'data': {'finalized_run': self.finalized_run,
+                                     'show_warning_message': show_warning_message,
+                                     'values': []}}
+            self.rows += 1
+            row = '|'
+            rows_made = 0
+            for i in range(int(len(list))):
+                row += '{}|'.format(str(list[i]))
+                rows_made += 1
+                add_row_data['data']['values'].append(list[i])
             if self.columns > rows_made:
                 if show_warning_message:
                     print(not_enough_values(rows_made, self.columns))
