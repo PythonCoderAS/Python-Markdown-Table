@@ -1,39 +1,46 @@
-import csv
-
-from .__init__ import Table
+from markdowntable import Table
 
 
-def import_from_csv(filename, extension='csv'):
+def import_from_csv(filename: str, extension: str = 'csv'):
     """
+    Creates a table from a csv.
 
-    :param filename: string
-    :param extension: string
+    :type extension: str
+    :type filename: str
+    :param filename: The csv filename
+    :param extension: The extension, default csv
     :return: markdown.Table object
     """
     global header_row, csv_table
-    with open(filename + '.' + extension, 'r', newline='') as file:
-        filereader = csv.reader(file)
+    with open(filename + '.' + extension, 'r') as file:
+        rows = file.read().split('\n')
         row_num = 0
-        for row in filereader:
+        for row in rows:
+            entries = row.split(',')
             if row_num == 0:
                 header_row = True
             if header_row:
-                first_entry = row[0]
-                row.remove(first_entry)
+                first_entry = entries[0]
+                entries.remove(first_entry)
                 csv_table = Table(first_entry)
-                for entry in row:
+                for entry in entries:
                     csv_table.add_column(entry)
+                header_row = False
             else:
-                csv_table.add_row_with_list(row)
-            row_num += 0
+                csv_table.add_row_with_list(entries)
+
+            row_num += 1
     return csv_table
 
 
-def import_from_code(code):
+def import_from_code(code: str):
     """
+    The function makes a table from existing Markdown code.
 
-    :param code: string
-    :return: markdown.Table object
+    :type code: str
+    :param code: The code to use
+    :return: The table
+    :rtype: markdown.Table object
     """
     global codetable
     lines = code.split('\n')

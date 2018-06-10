@@ -100,18 +100,9 @@ ENV/
 # mypy
 .mypy_cache/
 
-#sphinx
-docs\
-.pypirc
-Makefile
-make.bat
-source*
 
 #my custom file
 setupcommands.bat
-
-#.anything
-.*
 
 #logs
 logs*
