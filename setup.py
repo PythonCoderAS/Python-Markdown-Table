@@ -2,11 +2,10 @@ from setuptools import setup
 
 
 setup(name='markdowntable',
-      version='5.1.1',
+      version='6.0.0',
       description='Easy way to make markdown code for tables',
       url='https://github.com/PokestarFan/Python-Markdown-Table',
-      author='PokestarFan',
-      author_email='pokestarfan@yahoo.com',
+      author='PythonCoderAS',
       license='MIT',
       packages=['markdowntable'],
-      zip_safe=True)
+      python_requires='>=3.7') 
